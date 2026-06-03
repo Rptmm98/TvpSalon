@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bloom Salón Cloud</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#BD1A8D">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+
+    <!-- Fuentes Premium para Login -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <header id="main-header" style="display: none;">
+        <div class="header-logo-zone">
+            <span class="logo-icon">🌸</span>
+            <h1 id="header-salon-name">Bloom Salón</h1>
+        </div>
+        <div class="header-meta-zone">
+            <div class="header-clock" id="global-clock">00:00:00</div>
+            <div class="badge-role" id="user-info">No autenticado</div>
+            <button id="btn-back-superadmin" class="btn-accent" style="display:none; min-height:30px; padding:0 10px; font-size: 0.8rem;">Volver</button>
+            <button id="btn-logout" class="btn-outline" style="display:none; min-height:30px; padding:0 10px; font-size: 0.8rem;">Salir</button>
+        </div>
+    </header>
+
+    <nav class="tabs-navigation" id="main-nav" style="display: none;">
+        <button class="tab-link active" data-tab="modulo-tpv">TPV</button>
+        <button class="tab-link" data-tab="modulo-agenda">Estilistas</button>
+        <button class="tab-link" data-tab="modulo-clientes">Clientes</button>
+        <button class="tab-link" data-tab="modulo-inventario">Inventario</button>
+        <button class="tab-link" data-tab="modulo-reportes">Reportes</button>
+        <button class="tab-link" data-tab="modulo-caja">Caja</button>
+    </nav>
+
+    <!-- Nivel UI: Premium Login -->
+    <main class="login-premium-wrapper" id="login-section">
+        <!-- Elemento Izquierdo: Bokeh y Frase -->
+        <div class="login-left-panel">
+            <div class="login-quote-box">
+                <p class="quote-text">"Confía en el proceso y<br>disfruta el resultado ♡"</p>
+            </div>
+        </div>
+        
+        <!-- Elemento Derecho: Ramas Sakura (Simuladas con CSS y formas) -->
+        <div class="login-sakura-bg">🌸 🌸<br>&nbsp;&nbsp;🌸</div>
+
+        <!-- Contenido Central -->
+        <div class="login-premium-content">
+            
+            <!-- Branding Superior -->
+            <div class="login-branding">
+                <div class="login-logo-cloud">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cloud-svg"><path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.1332 20.177 10.2046 17.8687 10.0157C17.4332 6.60278 14.5901 4 11 4C7.13401 4 4 7.13401 4 11C4 11.1375 4.00392 11.2741 4.01166 11.4095C1.76106 11.8315 0 13.7915 0 16.1667C0 18.8354 2.16462 21 4.83333 21H17.5Z" fill="url(#pinkGrad)" stroke="none"/></svg>
+                    <span class="blossom-center">🌸</span>
+                    <defs><linearGradient id="pinkGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF69B4"/><stop offset="100%" stop-color="#E91E63"/></linearGradient></defs>
+                </div>
+                <h1 class="brand-serif">Bloom Salón</h1>
+                <h2 class="brand-script">Cloud</h2>
+                <div class="brand-subtitle">✿ SISTEMA TPV PARA SALONES ✿</div>
+                <p class="brand-slogan">Tu salón, tu negocio, en perfectas manos.</p>
+            </div>
+
+            <!-- Tarjeta Central (Glassmorphism) -->
+            <div class="login-glass-card">
+                <div class="glass-header">
+                    <div class="glass-icon">👩✨</div>
+                    <h3>¡Bienvenida!</h3>
+                    <p>Inicia sesión para continuar</p>
+                </div>
+
+                <div class="glass-form">
+                    <div class="glass-input-group">
+                        <span class="g-icon">👤</span>
+                        <input type="email" id="login-email" placeholder="Usuario">
+                    </div>
+                    <div class="glass-input-group">
+                        <span class="g-icon">🔒</span>
+                        <input type="password" id="login-password" placeholder="Contraseña">
+                        <span class="g-icon-right" id="toggle-password" title="Mostrar/Ocultar">👁️</span>
+                    </div>
+
+                    <div class="glass-options">
+                        <label class="g-checkbox"><input type="checkbox"> <span>Recordarme</span></label>
+                        <a href="#" class="g-link">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button id="btn-login" class="btn-fuchsia-gradient">Entrar al sistema &rarr;</button>
+                </div>
+            </div>
+
+            <!-- Footer y Features -->
+            <div class="login-features">
+                <div class="feat-item"><span class="f-icon">📅</span><span>Agenda / Organiza tu día</span></div>
+                <div class="feat-item"><span class="f-icon">👥</span><span>Clientes / Gestiónalos fácil</span></div>
+                <div class="feat-item"><span class="f-icon">📊</span><span>Reportes / Crecimiento real</span></div>
+                <div class="feat-item"><span class="f-icon">🛍️</span><span>Inventario / Control total</span></div>
+            </div>
+            
+            <div class="login-closing">♡ Todo lo que tu salón necesita, en un solo lugar. ♡</div>
+            </div>
+        </div>
+    </main>
+
+    <main class="container centered-layout" id="register-section" style="display: none;">
+        <div class="login-card">
+            <h2>Registro de Empleada</h2>
+            <p class="text-sm" id="register-subtitle" style="margin-bottom: 15px;">Validando invitación...</p>
+            
+            <input type="text" id="register-name" class="input-field" placeholder="Tu Nombre Completo" style="margin-bottom: 10px;">
+            <input type="email" id="register-email" class="input-field" placeholder="Correo electrónico" style="margin-bottom: 10px;">
+            <input type="password" id="register-password" class="input-field" placeholder="Contraseña (mínimo 6)" style="margin-bottom: 15px;">
+            
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-register" class="btn-primary" style="flex: 1;">Completar Registro</button>
+                <button id="btn-cancel-register" class="btn-outline">Cancelar</button>
+            </div>
+        </div>
+    </main>
+
+    <main class="container" id="superadmin-section" style="display: none;">
+        <div class="superadmin-grid">
+            <div class="superadmin-column">
+                <div class="section-title-container">
+                    <h2>Salones Registrados</h2>
+                    <button id="btn-create-salon" class="btn-primary">+ Crear Nuevo Salón</button>
+                </div>
+                <div id="lista-salones" class="scrollable-list">
+                    <p class="text-sm">Cargando salones...</p>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="section-title-container">
+                    <h2>Invitaciones</h2>
+                    <button id="btn-superadmin-invitar" class="btn-secondary">Generar Invitación</button>
+                </div>
+                <div class="card table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Salón</th>
+                                <th>Expira</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-invitaciones-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="superadmin-column">
+                <h2>Analítica Global</h2>
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <span class="kpi-value" id="sa-kpi-salones">0</span>
+                        <span class="kpi-label">Salones</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-value" id="sa-kpi-usuarios">0</span>
+                        <span class="kpi-label">Usuarios</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-value" id="sa-kpi-ventas">0</span>
+                        <span class="kpi-label">Ventas</span>
+                    </div>
+                </div>
+
+                <div class="card charts-card">
+                    <h3>Comparativa Facturación</h3>
+                    <div id="sa-chart-container" class="bar-chart-container">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main class="container-fluid" id="main-dashboard" style="display: none;">
+        
+        <section id="modulo-tpv" class="tab-content active-content">
+            <div class="tpv-layout-grid">
+                <div class="tpv-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                        <h3 style="margin:0;">Agenda del Día</h3>
+                        <button id="btn-abrir-agenda" class="btn-primary" style="padding: 0 10px; min-height: 30px; font-size: 0.8rem;">+ Cita</button>
+                    </div>
+                    <div id="kanban-agenda-container" class="kanban-board" style="min-height: 300px; max-height: 450px; padding-bottom: 5px;">
+                        <!-- Las columnas por estilista y sus líneas de tiempo se inyectarán aquí -->
+                    </div>
+                </div>
+
+                <div class="tpv-panel">
+                    <h3>Catálogo</h3>
+                    <div class="catalog-grid" id="tpv-catalog-grid">
+                        </div>
+                </div>
+
+                <div class="tpv-panel current-cart-panel">
+                    <h3>Carrito</h3>
+                    <div class="cart-selection-meta">
+                        <select id="tpv-estilista" class="input-field select-sm" style="margin-bottom: 10px;">
+                            <option value="">Asignar profesional...</option>
+                        </select>
+                        <select id="tpv-clienta" class="input-field select-sm">
+                            <option value="">Cliente Ocasional / Sin registrar...</option>
+                        </select>
+                    </div>
+                    <div id="tpv-carrito" class="cart-items-container">
+                        <p class="text-sm text-center" style="padding: 20px 0;">El carrito está vacío.</p>
+                    </div>
+                    <div class="cart-totals">
+                        <div class="totals-line">
+                            <span>Total:</span>
+                            <span id="tpv-total" class="total-amount">$0.00</span>
+                        </div>
+                        <div class="payment-method-selector" style="margin-top: 10px;">
+                            <label for="tpv-metodo-pago" class="text-xs">Método de Pago</label>
+                            <select id="tpv-metodo-pago" class="input-field select-sm">
+                                <option value="Tarjeta">Tarjeta</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Transferencia">Transferencia</option>
+                            </select>
+                        </div>
+                        <button id="tpv-confirm" class="btn-primary unified-action-btn">Finalizar Venta</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="modulo-agenda" class="tab-content">
+            <div class="management-header-actions" style="margin-bottom: 20px;">
+                <h2 style="margin: 0; color: var(--text-main);">Estilistas en Turno</h2>
+                <div id="admin-shortcut-estilista" style="display: none;">
+                    <div style="display: flex; gap: 10px;">
+                        <button id="btn-quick-add-estilista" class="btn-outline">+ Agregar Manual</button>
+                        <button id="btn-invitar-empleada" class="btn-secondary">+ Invitar con QR</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="lista-estilistas" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                <p class="text-sm">Cargando estilistas...</p>
+            </div>
+        </section>
+
+        <section id="modulo-clientes" class="tab-content">
+            <div class="management-header-actions">
+                <input type="text" id="search-clientes" class="input-field" placeholder="🔍 Buscar clienta por nombre...">
+                <button id="btn-admin-clients" class="btn-primary">+ Agregar Clienta</button>
+            </div>
+            <div class="card table-container" style="margin-top: 15px;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Teléfono / WhatsApp</th>
+                            <th>Tipo</th>
+                            <th>Historial Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-clientes-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="modulo-inventario" class="tab-content">
+            <div class="management-header-actions">
+                <div class="filter-pills">
+                    <button class="pill active" data-filter="servicio">Servicios</button>
+                    <button class="pill" data-filter="reventa">Reventa</button>
+                    <button class="pill" data-filter="interno">Uso Interno</button>
+                </div>
+                <button id="btn-open-consumo" class="btn-secondary" style="margin-right: 10px;">Registrar Consumo</button>
+                <button id="btn-new-catalog-item" class="btn-primary">+ Agregar Artículo/Servicio</button>
+            </div>
+            <div class="card table-container" style="margin-top: 15px;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Producto / Servicio</th>
+                            <th>Precio / Duración</th>
+                            <th>Stock / Requerimiento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-inventario-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="modulo-reportes" class="tab-content">
+            <div class="reports-dashboard-grid">
+                <div class="kpi-card diagnostic">
+                    <span class="kpi-value" id="rep-kpi-ventas">$0.00</span>
+                    <span class="kpi-label">Ventas del Día</span>
+                </div>
+                <div class="kpi-card diagnostic">
+                    <span class="kpi-value" id="rep-kpi-servicios">0</span>
+                    <span class="kpi-label">Servicios Hoy</span>
+                </div>
+            </div>
+            
+            <div class="reports-extended-layout" style="margin-top: 20px;">
+                <div class="card split-card">
+                    <h3>Ventas por método de pago</h3>
+                    <div class="chart-flex-container">
+                        <div class="concentric-rings-chart">
+                        </div>
+                        <div class="chart-legend-list">
+                            <p><span class="indicator-box card-blue"></span> Tarjeta: <span id="lbl-pct-tarjeta">0%</span></p>
+                            <p><span class="indicator-box cash-green"></span> Efectivo: <span id="lbl-pct-efectivo">0%</span></p>
+                            <p><span class="indicator-box trans-gold"></span> Transferencia: <span id="lbl-pct-transfer">0%</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card split-card" id="admin-commissions-panel" style="display:none;">
+                    <div class="section-title-container">
+                        <h3>Comisiones del Turno (40%)</h3>
+                        <button id="btn-trigger-commission-calc" class="btn-outline" style="min-height:30px; font-size:0.8rem; padding:0 10px;">Recalcular</button>
+                    </div>
+                    <div id="comisiones-list-container" style="margin-top: 10px;">
+                        <p class="text-sm">Generando informe...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reportes-detallados">
+                <div class="card" style="margin-top: 20px;">
+                    <div class="section-title-container" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3>Consumo de Químicos (Semana)</h3>
+                        <button id="btn-load-consumos" class="btn-outline" style="min-height:30px; font-size:0.8rem; padding:0 10px;">Actualizar</button>
+                    </div>
+                    <div id="lista-consumos" style="margin-top:10px; max-height:250px; overflow-y:auto;">
+                        <p class="text-sm">Calculando consumo...</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Bitácora de Ventas Diarias</h3>
+                    <div id="lista-ventas" style="margin-top:10px; max-height:250px; overflow-y:auto;">
+                        <p class="text-sm">No se registran transacciones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="modulo-caja" class="tab-content">
+            <div class="caja-workspace-container">
+                <div class="card status-caja-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3>Estado Operativo de Caja</h3>
+                        <span id="caja-status-badge" class="badge ocupada">Cerrada</span>
+                    </div>
+                    <div class="divider" style="margin:12px 0;"></div>
+                    <div id="caja-interactive-body">
+                        </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="floating-next-appt" style="display: none;">
+        <div class="bubble-inner">
+            <div class="bubble-icon">⏱️</div>
+            <div class="bubble-info">
+                <p class="title">Próxima Clienta</p>
+                <p id="floating-next-appt-text" class="detail">Cargando...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modal-title">Confirmar</h3>
+            <p class="modal-body" id="modal-message">¿Ejecutar esta acción?</p>
+            <div class="modal-actions">
+                <button class="btn-outline" id="modal-cancel">Cancelar</button>
+                <button class="btn-primary" id="modal-confirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="create-salon-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Crear Nuevo Salón</h3>
+            <div class="modal-body">
+                <input type="text" id="new-salon-name" class="input-field" placeholder="Nombre de Fantasía o Dueña" style="margin-bottom: 10px;">
+                <input type="text" id="new-salon-tenant" class="input-field" placeholder="ID del Tenant (ej: salon_elegance)" style="margin-bottom: 10px;">
+                <input type="email" id="new-salon-email" class="input-field" placeholder="Correo de administración" style="margin-bottom: 10px;">
+                <input type="password" id="new-salon-password" class="input-field" placeholder="Contraseña de acceso inicial">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="create-salon-cancel">Cancelar</button>
+                <button class="btn-primary" id="create-salon-confirm">Crear Salón</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="catalog-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title" id="catalog-modal-title">Nuevo Artículo / Servicio</h3>
+            <div class="modal-body">
+                <select id="cat-tipo" class="input-field" style="margin-bottom: 10px;">
+                    <option value="servicio">Servicio (Peluquería, Uñas, Cabina)</option>
+                    <option value="reventa">Producto de Reventa (Retail)</option>
+                    <option value="interno">Consumo Interno (Insumos/Químicos)</option>
+                </select>
+                <label class="text-sm" style="display:block; margin-bottom:4px;">Categoría de Clasificación</label>
+                <select id="cat-categoria" class="input-field" style="margin-bottom: 10px;">
+                    <option value="Capilar">Capilar / Peluquería</option>
+                    <option value="Uñas">Uñas / Manicura</option>
+                    <option value="Estética">Estética / Spa</option>
+                    <option value="General">General / Otros</option>
+                </select>
+                <input type="text" id="cat-nombre" class="input-field" placeholder="Nombre identificador" style="margin-bottom: 10px;">
+                <input type="number" id="cat-precio" class="input-field" placeholder="Precio base ($)" style="margin-bottom: 10px;">
+                
+                <div id="cat-servicio-fields">
+                    <input type="number" id="cat-duracion" class="input-field" placeholder="Duración estimada (Minutos)" style="margin-bottom: 10px;">
+                    <select id="cat-rol" class="input-field" style="margin-bottom: 10px;">
+                        <option value="estilista">Estilista Principal / Máster</option>
+                        <option value="colorista">Colorista</option>
+                        <option value="manicurista">Manicurista</option>
+                        <option value="asistente">Asistente</option>
+                        <option value="esteticista">Esteticista / Depiladora</option>
+                        <option value="lavadora">Lavadora / Auxiliar</option>
+                    </select>
+                </div>
+
+                <div id="cat-producto-fields" style="display:none;">
+                    <select id="cat-medida" class="input-field" style="margin-bottom: 10px;">
+                        <option value="unidad">Unidades</option>
+                        <option value="ml">Mililitros (ml) - Líquidos</option>
+                        <option value="gr">Gramos (g)</option>
+                    </select>
+                    <input type="number" id="cat-stock" class="input-field" placeholder="Existencias iniciales">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="btn-cat-cancel">Cancelar</button>
+                <button class="btn-primary" id="btn-cat-save">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="client-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Registrar Clienta</h3>
+            <div class="modal-body">
+                <input type="text" id="cli-nombre" class="input-field" placeholder="Nombre completo" style="margin-bottom: 10px;">
+                <input type="tel" id="cli-telefono" class="input-field" placeholder="Número de contacto" style="margin-bottom: 10px;">
+                <select id="cli-tipo" class="input-field" style="margin-bottom: 10px;">
+                    <option value="Nueva">Nueva</option>
+                    <option value="Frecuente">Frecuente</option>
+                    <option value="VIP">VIP</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="btn-cli-cancel">Cancelar</button>
+                <button class="btn-primary" id="btn-cli-save">Guardar Perfil</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="agenda-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Agendar Cita</h3>
+            <div class="modal-body">
+                <label class="text-sm">Clienta</label>
+                <select id="agd-clienta" class="input-field" style="margin-bottom: 10px;"></select>
+                
+                <label class="text-sm">Profesional</label>
+                <select id="agd-estilista" class="input-field" style="margin-bottom: 10px;"></select>
+                
+                <label class="text-sm">Servicio</label>
+                <select id="agd-servicio" class="input-field" style="margin-bottom: 10px;"></select>
+                
+                <label class="text-sm">Fecha y Hora de la Cita</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="date" id="agd-fecha" class="input-field" style="flex: 1;">
+                    <input type="time" id="agd-hora" class="input-field" style="flex: 1;">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="btn-agd-cancel">Cancelar</button>
+                <button class="btn-primary" id="btn-agd-save">Confirmar Reserva</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="consumo-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Registrar Consumo</h3>
+            <div class="modal-body">
+                <label class="text-sm">Profesional</label>
+                <select id="cons-estilista" class="input-field" style="margin-bottom: 10px;"></select>
+                
+                <label class="text-sm">Insumo Utilizado</label>
+                <select id="cons-articulo" class="input-field" style="margin-bottom: 10px;"></select>
+                
+                <label class="text-sm">Cantidad Consumida</label>
+                <input type="number" id="cons-cantidad" class="input-field" placeholder="Cantidad (ej: 30)" style="margin-bottom: 10px;">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="btn-cons-cancel">Cancelar</button>
+                <button class="btn-primary" id="btn-cons-save">Descontar Stock</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="movimiento-caja-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Movimiento de Caja</h3>
+            <div class="modal-body">
+                <label class="text-sm">Tipo de Movimiento</label>
+                <select id="mov-tipo" class="input-field" style="margin-bottom: 10px;">
+                    <option value="ingreso">Ingreso Extra (Efectivo)</option>
+                    <option value="gasto">Gasto / Retiro (Efectivo)</option>
+                </select>
+                <label class="text-sm">Concepto</label>
+                <input type="text" id="mov-concepto" class="input-field" placeholder="Ej: Compra de insumos, Abono..." style="margin-bottom: 10px;">
+                <label class="text-sm">Monto ($)</label>
+                <input type="number" id="mov-monto" class="input-field" placeholder="Cantidad" style="margin-bottom: 10px;">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="btn-mov-cancel">Cancelar</button>
+                <button class="btn-primary" id="btn-mov-save">Registrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="estilista-manual-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Añadir Estilista</h3>
+            <div class="modal-body">
+                <input type="text" id="est-manual-nombre" class="input-field" placeholder="Nombre completo" style="margin-bottom: 10px;">
+                <select id="est-manual-rol" class="input-field">
+                    <option value="estilista">Estilista Máster</option>
+                    <option value="colorista">Colorista</option>
+                    <option value="manicurista">Manicurista</option>
+                    <option value="asistente">Asistente</option>
+                    <option value="esteticista">Esteticista / Depiladora</option>
+                    <option value="lavadora">Lavadora / Auxiliar</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="btn-est-manual-cancel">Cancelar</button>
+                <button class="btn-primary" id="btn-est-manual-save">Guardar Perfil</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cliente-historial-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                <h3 class="modal-title" id="historial-nombre-cliente" style="margin:0;">Historial</h3>
+                <button class="btn-outline" style="min-height: 30px; min-width:30px; padding: 0;" onclick="document.getElementById('cliente-historial-modal').style.display='none'">X</button>
+            </div>
+            
+            <div class="modal-body" style="margin-bottom: 0;">
+                <div style="margin-bottom: 15px;">
+                    <label class="text-sm" style="display:block; margin-bottom:4px;">Notas (Fórmulas, precauciones, alergias...)</label>
+                    <textarea id="historial-notas-cliente" class="input-field" style="resize: vertical; min-height: 80px;" placeholder="Ej: No usar decolorante vol 40, alergia a..."></textarea>
+                    <button class="btn-secondary" id="btn-save-notas-cliente" style="margin-top: 8px; width: 100%; font-size: 0.85rem; min-height: 36px;">Guardar Notas</button>
+                </div>
+
+                <h4 style="margin-bottom: 10px; color: var(--text-main); font-size: 0.95rem;">Servicios y Productos Recientes</h4>
+                <div id="lista-historial-ventas" style="max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px;">
+                    <p class="text-sm">Cargando historial...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="qr-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Enlace de Invitación</h3>
+            <div class="modal-body" style="text-align:center;">
+                <div id="qr-code-container" style="display:inline-block; padding: 15px; background: white; border-radius: 8px; margin-bottom:15px;"></div>
+                <input type="text" id="invitation-link-input" class="input-field" readonly style="text-align:center; font-size:0.8rem;">
+                <p class="text-sm" style="margin-top: 12px; line-height:1.4;">Copia este enlace de un solo uso para registrar un nuevo miembro en el equipo de este salón.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" id="qr-close" style="width:100%;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
