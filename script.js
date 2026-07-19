@@ -207,7 +207,7 @@ auth.onAuthStateChanged(async (user) => {
                 }
             } else {
                 auth.signOut();
-                Modal.show("Acceso Denegado", "Tu usuario no está registrado en el directorio del sistema Bloom.", null);
+                Modal.show("Acceso Denegado", `Tu usuario no está registrado en el directorio del sistema ${BRAND.appName}.`, null);
             }
         } catch (error) {
             console.error("Error al obtener perfil:", error);
@@ -229,8 +229,8 @@ auth.onAuthStateChanged(async (user) => {
         if (uiAdminTools) uiAdminTools.style.display = 'none';
         btnBackSuperAdmin.style.display = 'none';
         uiUserInfo.textContent = 'No autenticado';
-        if (uiHeaderSalonName) uiHeaderSalonName.textContent = 'Bloom Salón';
-        document.title = 'Bloom Salón Cloud';
+        if (uiHeaderSalonName) uiHeaderSalonName.textContent = BRAND.appName;
+        document.title = `${BRAND.appName} ${BRAND.scriptWord}`;
         detenerEscuchas();
     }
 });

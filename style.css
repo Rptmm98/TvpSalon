@@ -19,6 +19,10 @@
     --danger: #CB7185; /* Rojo rubor apagado */
     --neu-out: 0 4px 10px -2px rgba(0, 0, 0, 0.15); /* Sombras muy difusas y ligeras */
     --neu-in: inset 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    /* Color de marca: valores por defecto, sobreescritos en tiempo de ejecución por branding.js */
+    --brand-primary: #E91E63;
+    --brand-primary-light: #FF69B4;
+    --brand-accent: #BD1A8D;
 }
 
 * {
@@ -413,7 +417,7 @@ button:active { box-shadow: var(--neu-in); transform: scale(0.98); }
 .cloud-svg { width: 100%; height: 100%; }
 .blossom-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -40%); font-size: 1.5rem; }
 .brand-serif { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: #5E2129; margin: 0; line-height: 1; }
-.brand-script { font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: #E91E63; margin: -10px 0 10px 0; font-weight: normal; }
+.brand-script { font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: var(--brand-primary); margin: -10px 0 10px 0; font-weight: normal; }
 .brand-subtitle { font-size: 0.75rem; font-weight: 700; color: #5E2129; letter-spacing: 2px; margin-bottom: 5px; }
 .brand-slogan { font-size: 0.95rem; color: #5E2129; opacity: 0.8; margin: 0; }
 
@@ -426,7 +430,7 @@ button:active { box-shadow: var(--neu-in); transform: scale(0.98); }
 }
 .glass-header { text-align: center; margin-bottom: 25px; }
 .glass-icon { font-size: 2.5rem; margin-bottom: 10px; }
-.glass-header h3 { font-size: 1.5rem; color: #E91E63; margin: 0 0 5px 0; font-weight: 800; }
+.glass-header h3 { font-size: 1.5rem; color: var(--brand-primary); margin: 0 0 5px 0; font-weight: 800; }
 .glass-header p { color: #8F9FB3; font-size: 0.95rem; margin: 0; }
 
 /* Inputs Premium */
@@ -436,7 +440,7 @@ button:active { box-shadow: var(--neu-in); transform: scale(0.98); }
     border: 1px solid #E2E8F0; border-radius: 16px; padding: 0 15px;
     transition: border 0.3s, box-shadow 0.3s;
 }
-.glass-input-group:focus-within { border-color: #E91E63; box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1); }
+.glass-input-group:focus-within { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1); }
 .g-icon, .g-icon-right { font-size: 1.1rem; opacity: 0.6; }
 .g-icon-right { cursor: pointer; }
 .glass-input-group input {
@@ -448,12 +452,12 @@ button:active { box-shadow: var(--neu-in); transform: scale(0.98); }
 /* Opciones y Botón */
 .glass-options { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.85rem; margin: 5px 0; }
 .g-checkbox { display: flex; align-items: center; gap: 8px; color: #5E2129; cursor: pointer; }
-.g-checkbox input { accent-color: #E91E63; width: 16px; height: 16px; cursor: pointer; }
-.g-link { color: #E91E63; text-decoration: none; font-weight: 600; }
+.g-checkbox input { accent-color: var(--brand-primary); width: 16px; height: 16px; cursor: pointer; }
+.g-link { color: var(--brand-primary); text-decoration: none; font-weight: 600; }
 .g-link:hover { text-decoration: underline; }
 
 .btn-fuchsia-gradient {
-    background: linear-gradient(135deg, #E91E63 0%, #FF69B4 100%); color: white;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-light) 100%); color: white;
     border: none; border-radius: 16px; padding: 16px; font-size: 1.05rem;
     font-weight: 700; width: 100%; box-shadow: 0 8px 20px rgba(233, 30, 99, 0.3);
     cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;

@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bloom Salón Cloud</title>
-    
+
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#BD1A8D">
+    <meta name="theme-color" content="#BD1A8D" id="meta-theme-color">
     <link rel="apple-touch-icon" href="icon-192x192.png">
 
     <!-- Fuentes Premium para Login -->
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- Config de marca: renombra la app editando solo branding.js -->
+    <script src="branding.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -22,7 +25,7 @@
 
     <header id="main-header" style="display: none;">
         <div class="header-logo-zone">
-            <span class="logo-icon">🌸</span>
+            <span class="logo-icon js-brand-logo-icon">🌸</span>
             <h1 id="header-salon-name">Bloom Salón</h1>
         </div>
         <div class="header-meta-zone">
@@ -47,27 +50,27 @@
         <!-- Elemento Izquierdo: Bokeh y Frase -->
         <div class="login-left-panel">
             <div class="login-quote-box">
-                <p class="quote-text">"Confía en el proceso y<br>disfruta el resultado ♡"</p>
+                <p class="quote-text js-brand-quote">"Confía en el proceso y<br>disfruta el resultado ♡"</p>
             </div>
         </div>
-        
+
         <!-- Elemento Derecho: Ramas Sakura (Simuladas con CSS y formas) -->
-        <div class="login-sakura-bg">🌸 🌸<br>&nbsp;&nbsp;🌸</div>
+        <div class="login-sakura-bg"><span class="js-brand-logo-icon">🌸</span> <span class="js-brand-logo-icon">🌸</span><br>&nbsp;&nbsp;<span class="js-brand-logo-icon">🌸</span></div>
 
         <!-- Contenido Central -->
         <div class="login-premium-content">
-            
+
             <!-- Branding Superior -->
             <div class="login-branding">
                 <div class="login-logo-cloud">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cloud-svg"><path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.1332 20.177 10.2046 17.8687 10.0157C17.4332 6.60278 14.5901 4 11 4C7.13401 4 4 7.13401 4 11C4 11.1375 4.00392 11.2741 4.01166 11.4095C1.76106 11.8315 0 13.7915 0 16.1667C0 18.8354 2.16462 21 4.83333 21H17.5Z" fill="url(#pinkGrad)" stroke="none"/></svg>
-                    <span class="blossom-center">🌸</span>
-                    <defs><linearGradient id="pinkGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF69B4"/><stop offset="100%" stop-color="#E91E63"/></linearGradient></defs>
+                    <span class="blossom-center js-brand-logo-icon">🌸</span>
+                    <defs><linearGradient id="pinkGrad" x1="0" y1="0" x2="1" y2="1"><stop id="brand-grad-start" offset="0%" stop-color="#FF69B4"/><stop id="brand-grad-end" offset="100%" stop-color="#E91E63"/></linearGradient></defs>
                 </div>
-                <h1 class="brand-serif">Bloom Salón</h1>
-                <h2 class="brand-script">Cloud</h2>
-                <div class="brand-subtitle">✿ SISTEMA TPV PARA SALONES ✿</div>
-                <p class="brand-slogan">Tu salón, tu negocio, en perfectas manos.</p>
+                <h1 class="brand-serif js-brand-name">Bloom Salón</h1>
+                <h2 class="brand-script js-brand-script">Cloud</h2>
+                <div class="brand-subtitle js-brand-tagline">✿ SISTEMA TPV PARA SALONES ✿</div>
+                <p class="brand-slogan js-brand-slogan">Tu salón, tu negocio, en perfectas manos.</p>
             </div>
 
             <!-- Tarjeta Central (Glassmorphism) -->
@@ -106,7 +109,7 @@
                 <div class="feat-item"><span class="f-icon">🛍️</span><span>Inventario / Control total</span></div>
             </div>
             
-            <div class="login-closing">♡ Todo lo que tu salón necesita, en un solo lugar. ♡</div>
+            <div class="login-closing js-brand-closing">♡ Todo lo que tu salón necesita, en un solo lugar. ♡</div>
             </div>
         </div>
     </main>
