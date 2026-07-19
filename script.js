@@ -84,6 +84,7 @@ const registerSubtitle = document.getElementById('register-subtitle');
 const btnRegister = document.getElementById('btn-register');
 const btnCancelRegister = document.getElementById('btn-cancel-register');
 const uiUserInfo = document.getElementById('user-info');
+const uiHeaderSalonName = document.getElementById('header-salon-name');
 const uiAdminTools = document.getElementById('admin-tools');
 const btnAbrirTpv = document.getElementById('btn-abrir-tpv');
 const btnLogin = document.getElementById('btn-login');
@@ -191,6 +192,7 @@ auth.onAuthStateChanged(async (user) => {
                     if (btnAbrirTpv) btnAbrirTpv.style.display = 'block';
                     const uiMainNav = document.getElementById('main-nav');
                     if (uiMainNav) uiMainNav.style.display = 'flex';
+                    actualizarNombreSalon(CURRENT_TENANT_ID, userData);
                     
                     if (CURRENT_USER_ROLE === 'admin') {
                         if (uiAdminTools) uiAdminTools.style.display = 'block';
@@ -227,9 +229,32 @@ auth.onAuthStateChanged(async (user) => {
         if (uiAdminTools) uiAdminTools.style.display = 'none';
         btnBackSuperAdmin.style.display = 'none';
         uiUserInfo.textContent = 'No autenticado';
+        if (uiHeaderSalonName) uiHeaderSalonName.textContent = 'Bloom Salón';
+        document.title = 'Bloom Salón Cloud';
         detenerEscuchas();
     }
 });
+
+// Muestra el nombre real del salón (tenant) en el header en vez del texto fijo "Bloom Salón",
+// para que cada salón que use el sistema vea su propia marca.
+async function actualizarNombreSalon(tenantId, userData) {
+    if (!uiHeaderSalonName || !tenantId) return;
+    let nombreSalon = userData && userData.role === 'admin' ? userData.nombre : null;
+    if (!nombreSalon) {
+        try {
+            const adminSnap = await db.collection("users")
+                .where("tenantId", "==", tenantId)
+                .where("role", "==", "admin")
+                .limit(1)
+                .get();
+            nombreSalon = adminSnap.empty ? null : adminSnap.docs[0].data().nombre;
+        } catch (error) {
+            console.warn("No se pudo obtener el nombre del salón:", error);
+        }
+    }
+    uiHeaderSalonName.textContent = nombreSalon || 'Mi Salón';
+    document.title = `${nombreSalon || 'Mi Salón'} — TPV`;
+}
 
 btnLogin.addEventListener('click', () => {
     const email = document.getElementById('login-email').value;
@@ -624,6 +649,8 @@ window.inspeccionarSalon = function(tenantId, nombre) {
     const uiMainNav = document.getElementById('main-nav');
     if (uiMainNav) uiMainNav.style.display = 'flex';
     uiUserInfo.textContent = `Inspeccionando: ${nombre}`;
+    if (uiHeaderSalonName) uiHeaderSalonName.textContent = nombre;
+    document.title = `${nombre} — TPV`;
     const scEstilista = document.getElementById('admin-shortcut-estilista');
     if (scEstilista) scEstilista.style.display = 'block';
     iniciarEscuchas();

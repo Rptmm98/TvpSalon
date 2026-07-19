@@ -1,0 +1,101 @@
+rules_version = '2';
+
+// Reglas de seguridad recomendadas para Bloom Salón TPV.
+//
+// CÓMO USAR:
+// 1. Ve a Firebase Console -> tu proyecto -> Firestore Database -> pestaña "Reglas".
+// 2. Pega el contenido de este archivo y publica.
+// 3. Pruébalo con el simulador de reglas de Firebase (o el emulador local)
+//    antes de usarlo en producción: no fue desplegado ni verificado aquí.
+//
+// MODELO: cada documento de negocio (clientes, ventas, articulos_salones,
+// estilistas_turnos, cajas) tiene un campo "tenantId" que identifica al salón.
+// Cada usuario tiene un documento en /users/{uid} con "role" ("superadmin",
+// "admin" o "empleado") y "tenantId". Estas reglas aíslan los datos de cada
+// salón entre sí y evitan que cualquier usuario se autoasigne un rol o
+// tenant distinto al que le corresponde.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function estaAutenticado() {
+      return request.auth != null;
+    }
+
+    function existePerfil() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function datosUsuario() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function esSuperAdmin() {
+      return estaAutenticado() && existePerfil() && datosUsuario().role == 'superadmin';
+    }
+
+    function esMiTenant(tenantId) {
+      return estaAutenticado() && existePerfil() && datosUsuario().tenantId == tenantId;
+    }
+
+    function esAdminDeMiTenant(tenantId) {
+      return esMiTenant(tenantId) && datosUsuario().role == 'admin';
+    }
+
+    // Perfiles de usuario (dueñas, empleadas, superadmin).
+    match /users/{userId} {
+      allow read: if estaAutenticado() &&
+        (request.auth.uid == userId || esSuperAdmin() ||
+         (existePerfil() && resource.data.tenantId == datosUsuario().tenantId));
+
+      // Alta propia durante el registro por invitación: nunca puede
+      // autoasignarse rol admin/superadmin, solo "empleado".
+      allow create: if esSuperAdmin() ||
+        (estaAutenticado() &&
+         request.auth.uid == userId &&
+         request.resource.data.role == 'empleado' &&
+         request.resource.data.tenantId is string &&
+         request.resource.data.tenantId.size() > 0);
+
+      // Edición de cuentas y borrado (deshabilitar salón): solo superadmin.
+      allow update, delete: if esSuperAdmin();
+    }
+
+    // Invitaciones para que una empleada se registre.
+    match /invitaciones/{inviteId} {
+      // Lectura puntual de un enlace de invitación: necesaria antes de
+      // iniciar sesión (la persona todavía no está autenticada).
+      allow get: if true;
+      // Listar TODAS las invitaciones: solo superadmin (panel global).
+      allow list: if esSuperAdmin();
+      allow create: if estaAutenticado() && esAdminDeMiTenant(request.resource.data.tenantId);
+      // Marcar como usada al completar el registro: solo ese campo, y solo
+      // si seguía sin usarse.
+      allow update: if estaAutenticado() &&
+        resource.data.used == false &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used']);
+    }
+
+    // Colecciones propias de cada salón: aisladas por tenantId.
+    match /articulos_salones/{docId} {
+      allow read, update, delete: if esSuperAdmin() || esMiTenant(resource.data.tenantId);
+      allow create: if esSuperAdmin() || esMiTenant(request.resource.data.tenantId);
+    }
+    match /estilistas_turnos/{docId} {
+      allow read, update, delete: if esSuperAdmin() || esMiTenant(resource.data.tenantId);
+      allow create: if esSuperAdmin() || esMiTenant(request.resource.data.tenantId);
+    }
+    match /clientes/{docId} {
+      allow read, update, delete: if esSuperAdmin() || esMiTenant(resource.data.tenantId);
+      allow create: if esSuperAdmin() || esMiTenant(request.resource.data.tenantId);
+    }
+    match /ventas/{docId} {
+      allow read, update, delete: if esSuperAdmin() || esMiTenant(resource.data.tenantId);
+      allow create: if esSuperAdmin() || esMiTenant(request.resource.data.tenantId);
+    }
+    match /cajas/{docId} {
+      allow read, update, delete: if esSuperAdmin() || esMiTenant(resource.data.tenantId);
+      allow create: if esSuperAdmin() || esMiTenant(request.resource.data.tenantId);
+    }
+  }
+}
